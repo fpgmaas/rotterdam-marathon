@@ -1,14 +1,17 @@
 library(data.table)
-library(dplyr)
-library(plotly)
 library(rvest)
+library(chron)
 
-n=80
+n=13997
 count=25
 offset=0
 k=1
 result = vector('list',ceiling(n/count))
 
+nullToNa <- function(mylist)
+{
+  lapply(mylist, function(x) ifelse(is.null(x), NA, x))
+}
 
 for(k in 1:ceiling(n/count))
 {
@@ -24,28 +27,34 @@ for(k in 1:ceiling(n/count))
   
   for(i in 1:length(json_data[[3]]))
   {
-    l[[i]] = c(list(
-      json_data[[3]][[i]]$athlete$name,
-      json_data[[3]][[i]]$classification$bib,
-      json_data[[3]][[i]]$classification$category,
-      json_data[[3]][[i]]$classification$genderRank,
-      json_data[[3]][[i]]$classification$rank,
-      json_data[[3]][[i]]$classification$categoryRank,
-      json_data[[3]][[i]]$classification$primaryDisplayTime,
-      json_data[[3]][[i]]$classification$name,
-      json_data[[3]][[i]]$classification$countryCode,
-      json_data[[3]][[i]]$classification$gender,
-      json_data[[3]][[i]]$classification$city),
+   runner_data <- list(
+      'name' = json_data[[3]][[i]]$athlete$name,
+      'bib' = json_data[[3]][[i]]$classification$bib,
+      'category' = json_data[[3]][[i]]$classification$category,
+      'genderRank' = json_data[[3]][[i]]$classification$genderRank,
+      'rank' = json_data[[3]][[i]]$classification$rank,
+      'categoryRank' = json_data[[3]][[i]]$classification$categoryRank,
+      'primaryDisplayTime' = json_data[[3]][[i]]$classification$primaryDisplayTime,
+      'name' = json_data[[3]][[i]]$classification$name,
+      'countryCode' = json_data[[3]][[i]]$classification$countryCode,
+      'gender' = json_data[[3]][[i]]$classification$gender,
+      'city' = json_data[[3]][[i]]$classification$city)
       
-      sapply(1:10,function(x){c(
-        list(json_data[[3]][[i]]$classification$splits[[x]]$name,
-             json_data[[3]][[i]]$classification$splits[[x]]$cumulativeTime))
-      })
-    )
-    l[[i]] = lapply(l[[i]], function(x) ifelse(is.null(x), NA, x))
+      split_data <- sapply(1:10,function(x){
+        my_list <- nullToNa(list(json_data[[3]][[i]]$classification$splits[[x]]$name,
+                          json_data[[3]][[i]]$classification$splits[[x]]$cumulativeTime))
+        return(setNames(my_list,c(paste0('split',x), paste0('split',x,'_time'))))
+      },simplify=F)
+      
+    l[[i]] = nullToNa(c(runner_data,unlist(split_data)))
   }
   result[[k]] = rbindlist(l)
-  
 }
 
+result = rbindlist(result)
+for(column in colnames(result)[grepl('time',colnames(result),ignore.case = T)])
+{
+ result[[column]] <- chron::times(result[[column]]) 
+}
 
+saveRDS(result,'data/result.RDS')
