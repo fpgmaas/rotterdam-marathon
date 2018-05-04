@@ -37,7 +37,7 @@ split_dists = c(0,as.numeric(gsub('Finish','42.68',split_dists)))*1000
 
 rdam_map = readRDS('data/rdam_map.RDS')
 
-for (minute in 130:140)
+for (minute in 1:10)
 {
   
   lon_list = vector('numeric',nrow(df_runners))
@@ -71,22 +71,22 @@ for (minute in 130:140)
   # rdam_map <- get_map(location = c(4.48,51.90), maptype = "terrain", source = "google", zoom = 12)
   #> Map from URL : http://maps.googleapis.com/maps/api/staticmap?center=36.971709,-122.080954&zoom=14&size=640x640&scale=2&maptype=terrain&language=en-EN&sensor=false
   png(paste0('images/',minute,'.png'),800,800)
-  print(ggmap(rdam_map) +
+  print(ggmap(rdam_map,extent = "panel") +
           geom_path(data = df_track, color='white',alpha=0.9, size = 3, lineend = "round") + 
-          geom_point(data=df_position,aes(x=lon,y=lat),size=1,color='orange') +
+          geom_point(data=df_position,aes(x=lon,y=lat),size=1.5,color='#EE7600',alpha=0.7) +
           theme_void() +
           theme(plot.title = element_text(hjust = 0.5,
-                                          family = "Helvetica", 
                                           face = "bold", 
                                           size = (30),
                                           margin = margin(t = 20, r = 0, b = 10, l = 0)),
                 plot.subtitle = element_text(hjust = 0.5,
-                                          family = "Helvetica",
-                                          size = (22),
+                                             size = (22),
                                           margin = margin(t = 10, r = 0, b = 25, l = 0))
                 ) +
           labs(title='Rotterdam Marathon 2018',subtitle='A timelapse of all runners') +
-          annotate("text", x = 4.40, y = 51.96, label = sprintf('%02d:%02d', td@hour, minute(td)),color='white',size=11)
+          annotate("text", x = 4.45, y = 51.95, label = sprintf('%02d:%02d', td@hour, minute(td)),color='white',size=13) +
+          scale_x_continuous(limits = c(4.466-0.03, 4.546+0.03), expand = c(0, 0)) +
+          scale_y_continuous(limits = c(51.87-0.01, 51.95+0.01), expand = c(0, 0))
   )
   dev.off()
 }
