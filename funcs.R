@@ -49,16 +49,21 @@ get_track <- function()
   {
     df_track[[column]] <- as.numeric(as.character(df_track[[column]]))
   }
+  
+  # Slight modifications to the track, otherwise there is a large piece of overlapping trail,
+  # which reduces the clarity of the visualization.
   df_track$lon[df_track$distance>39000] = df_track$lon[df_track$distance>39000] + 0.002
   df_track$lat[df_track$distance>39000] = df_track$lat[df_track$distance>39000] - 0.001
   df_track$lon[df_track$distance>39000 & df_track$distance<40220] = df_track$lon[df_track$distance>39000 & df_track$distance<40220] - 0.0001
   df_track$lon[df_track$distance>41400 & df_track$distance<42200] = df_track$lon[df_track$distance>41400 & df_track$distance<42200] - 0.0002
   df_track$lat[df_track$distance>41400 & df_track$distance<42200] = df_track$lat[df_track$distance>41400 & df_track$distance<42200] + 0.0002
 
-
   return(df_track)
 }
 
+
+# Get the split times for each runner. Output is a list of vectors, 
+# where each entry in the list contains the split times for one runner.
 get_split_times_per_runner_and_remove_incomplete_runners <- function(df_runners){
   split_cols = colnames(df_runners)[grepl('_time',colnames(df_runners))]
   df_runners = df_runners[which(rowSums(is.na(df_runners[,split_cols,with=F]))<1),]
@@ -66,6 +71,8 @@ get_split_times_per_runner_and_remove_incomplete_runners <- function(df_runners)
   return(list('df_runners' = df_runners, 'split_times' = split_times))
 }
 
+
+# Get the split distances, equal for all runners.
 get_split_dists <- function(df_runners)
 {
   split_dists = as.character(as.vector(df_runners[1,colnames(df_runners)[grepl('split',colnames(df_runners))],with=F]))[c(T,F)]
@@ -74,8 +81,8 @@ get_split_dists <- function(df_runners)
   return(split_dists)
 }
 
-
-create_plot <- function(df_position, df_track, minute)
+# Create a plot of Rotterdam, with the marathon track and the current position of the runners.
+create_plot <- function(df_position, df_track, minute, n_finished)
 {
   td <- seconds_to_period(minute*60)
   suppressMessages(p <- ggmap(rdam_map,extent = "panel") +
@@ -90,8 +97,9 @@ create_plot <- function(df_position, df_track, minute)
                                        size = (22),
                                        margin = margin(t = 10, r = 0, b = 25, l = 0))
     ) +
-    labs(title='Rotterdam Marathon 2018',subtitle='A timelapse of all runners') +
-    annotate("text", x = 4.45, y = 51.95, label = sprintf('%02d:%02d', td@hour, minute(td)),color='white',size=13) +
+    labs(title='Rotterdam Marathon 2018',subtitle='A time-lapse of all runners') +
+    annotate("text", x = 4.44, y = 51.95, label = sprintf('%02d:%02d', td@hour, minute(td)),color='white',size=16,hjust = 0) +
+    annotate("text", x = 4.44, y = 51.9427, label = paste0('Finished: ', n_finished),color='white',size=10,hjust = 0) +
     scale_x_continuous(limits = c(4.466-0.03, 4.546+0.03), expand = c(0, 0)) +
     scale_y_continuous(limits = c(51.87-0.01, 51.95+0.01), expand = c(0, 0)))
   return(p)

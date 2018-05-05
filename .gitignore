@@ -33,5 +33,5 @@ vignettes/*.pdf
 *.knit.md
 
 # data
-data/
+data/key.json
 images/

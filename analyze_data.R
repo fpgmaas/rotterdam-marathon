@@ -17,8 +17,8 @@ tot_dist = max(df_track$distance)
 
 # Add some noise per runner, so they do not all run on the same straight line.
 set.seed(1)
-df_runners$lat_noise = runif(nrow(df_runners),-0.0006,0.0006)
-df_runners$lon_noise = runif(nrow(df_runners),-0.0006,0.0006)
+df_runners$lat_noise = runif(nrow(df_runners),-0.0007,0.0007)
+df_runners$lon_noise = runif(nrow(df_runners),-0.0007,0.0007)
 
 # Split times and dists
 X <- get_split_times_per_runner_and_remove_incomplete_runners (df_runners)
@@ -26,8 +26,9 @@ df_runners <- X[['df_runners']]
 split_times <- X[['split_times']]
 split_dists <- get_split_dists(df_runners)
 
-for (minute in 0:360)
+for (minute in seq(220,230,0.5))
 {
+  print(paste0('minute: ', minute))
   # Initialize lists to keep track of each runners' lat and lon.
   lon_list = vector('numeric',nrow(df_runners))
   lat_list = vector('numeric',nrow(df_runners))
@@ -60,9 +61,10 @@ for (minute in 0:360)
   # Create data.frame with runners' positions and remove runners that are already finished
   df_position = data.frame(lon=lon_list,lat=lat_list)
   df_position = df_position[rowSums(is.na(df_position))==0,] 
+  n_finished = nrow(df_runners)-nrow(df_position)
   
-  png(paste0('images/',minute,'.png'),800,800)
-  print(create_plot(df_position, df_track, minute))
+  png(paste0('images/',formatC(minute, digits = 1, format = "f"),'.png'),800,800)
+  print(create_plot(df_position, df_track, minute, n_finished))
   dev.off()
 }
 
