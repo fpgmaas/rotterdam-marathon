@@ -3,12 +3,13 @@ library(rvest)
 library(chron)
 library(rjson)
 
-n=13997
+n=13997 # hardcoded, the amount of runners. Could also run API once and read from API.
 count=100
 offset=0
 k=1
 result = vector('list',ceiling(n/count))
 
+# Replace all NULL in a list with NA
 nullToNa <- function(mylist)
 {
   lapply(mylist, function(x) ifelse(is.null(x), NA, x))
@@ -16,15 +17,15 @@ nullToNa <- function(mylist)
 
 for(k in 1:ceiling(n/count))
 {
+  # API URL
   url <- paste0('https://eventresults-api.sporthive.com/api/events/6386505967023513344/races/419161/classifications/search?count=',
                 min(count,n-(offset)),'&offset=',offset)
   print(url)
   offset=count+offset
-  
   page <- read_html(url)
   json_data <- fromJSON(file=url)
   
-  l = vector('list',150)
+  l = vector('list',count)
   
   for(i in 1:length(json_data[[3]]))
   {

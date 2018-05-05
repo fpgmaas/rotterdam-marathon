@@ -1,4 +1,3 @@
-### TODO parse chron to numeric in read_data()
 library(ggmap)
 library(ggmapstyles)
 library(data.table)
@@ -7,7 +6,6 @@ library(XML)
 library(data.table)
 library(lubridate)
 library(chron)
-
 source('funcs.R')
 
 df_runners = get_marathon_results()
@@ -17,8 +15,8 @@ tot_dist = max(df_track$distance)
 
 # Add some noise per runner, so they do not all run on the same straight line.
 set.seed(1)
-df_runners$lat_noise = runif(nrow(df_runners),-0.0007,0.0007)
-df_runners$lon_noise = runif(nrow(df_runners),-0.0007,0.0007)
+df_runners$lat_noise = runif(nrow(df_runners),-0.001,0.001)
+df_runners$lon_noise = runif(nrow(df_runners),-0.001,0.001)
 
 # Split times and dists
 X <- get_split_times_per_runner_and_remove_incomplete_runners (df_runners)
@@ -26,7 +24,7 @@ df_runners <- X[['df_runners']]
 split_times <- X[['split_times']]
 split_dists <- get_split_dists(df_runners)
 
-for (minute in seq(220,230,0.5))
+for (minute in seq(0,250,15))
 {
   print(paste0('minute: ', minute))
   # Initialize lists to keep track of each runners' lat and lon.
@@ -63,8 +61,24 @@ for (minute in seq(220,230,0.5))
   df_position = df_position[rowSums(is.na(df_position))==0,] 
   n_finished = nrow(df_runners)-nrow(df_position)
   
-  png(paste0('images/',formatC(minute, digits = 1, format = "f"),'.png'),800,800)
+  png(paste0('images/',gsub('\\.','',formatC(minute, digits = 1, width=5, flag=0, format = "f")),'.png'),1080,1080)
   print(create_plot(df_position, df_track, minute, n_finished))
   dev.off()
 }
 
+# To create the clip from the images, move all files to images/magick with the appropriate naming format for the ffmpeg command.
+k=1
+files = list.files('images',include.dirs = F)
+for(file in files)
+{
+  x = as.numeric(gsub('\\.png','',file))
+  if(!is.na(x))
+  {
+    y = paste0('images/magick/',formatC(k, digits = 0, width=4, flag=0, format = "f"),'.png')
+    file.copy(paste0('images/',file),y)
+    k=k+1
+  }
+}
+
+# Run system command to create MKV file.
+system('ffmpeg -framerate 6 -y -i images/magick/%04d.png -codec copy output/timelapse.mkv')
