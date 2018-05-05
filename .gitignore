@@ -35,3 +35,4 @@ vignettes/*.pdf
 # data
 data/key.json
 output/
+images/
