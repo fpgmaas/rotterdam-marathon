@@ -52,8 +52,8 @@ get_track <- function()
   
   # Slight modifications to the track, otherwise there is a large piece of overlapping trail,
   # which reduces the clarity of the visualization.
-  df_track$lon[df_track$distance>39000] = df_track$lon[df_track$distance>39000] + 0.0015
-  df_track$lat[df_track$distance>39000] = df_track$lat[df_track$distance>39000] - 0.001
+  df_track$lon[df_track$distance>39000] = df_track$lon[df_track$distance>39000] + 0.0019
+  df_track$lat[df_track$distance>39000] = df_track$lat[df_track$distance>39000] - 0.0014
   df_track$lon[df_track$distance>39000 & df_track$distance<40220] = df_track$lon[df_track$distance>39000 & df_track$distance<40220] - 0.00015
   df_track$lon[df_track$distance>41400 & df_track$distance<42200] = df_track$lon[df_track$distance>41400 & df_track$distance<42200] - 0.00025
   df_track$lat[df_track$distance>41400 & df_track$distance<42200] = df_track$lat[df_track$distance>41400 & df_track$distance<42200] + 0.0002
@@ -86,7 +86,7 @@ create_plot <- function(df_position, df_track, minute, n_finished)
 {
   td <- seconds_to_period(minute*60)
   suppressMessages(p <- ggmap(rdam_map,extent = "panel") +
-    geom_path(data = df_track, color='white',alpha=0.9, size = 7, lineend = "round") + 
+    geom_path(data = df_track, color='white',alpha=0.9, size = 6, lineend = "round") + 
     geom_point(data=df_position,aes(x=lon,y=lat),size=1.5,color='#EE7600',alpha=0.7) +
     theme_void() +
     theme(plot.title = element_text(hjust = 0.5,
