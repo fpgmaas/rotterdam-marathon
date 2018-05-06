@@ -25,8 +25,9 @@ Requirements
 I don't think anyone ever plans on running the entirety of this code again, but if that is the case, some requirements are:
 
 - Patience. I only planned to run this code once so I did not do much to optimize the runtime, the large for-loop probably could benefit from the use of matrix-operations and/or vectorization.
-- [ggmapstyles](https://github.com/mikey-harper/ggmapstyles) and a Google Maps API key stored in the file *key.json* to download the map of Rotterdam. I already saved the result to an RDS in the data folder so not really necessary. Note that *ggmapstyles* also requires the development version of *ggmap*.
+- [ggmapstyles](https://github.com/mikey-harper/ggmapstyles) and a Google Maps API key stored in the file *key.json* to download the map of Rotterdam. I already saved the result to an RDS in the data folder so it is not really necessary. Note that *ggmapstyles* also requires the development version of *ggmap*.
 - [ImageMagick](https://www.imagemagick.org/script/index.php) for the conversion of many *png*'s to *mkv*.
+- to run the code, simply do `source('main.R')`.
 
 
 
