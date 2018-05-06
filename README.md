@@ -8,7 +8,7 @@ I recently came across a Twitter post by Alex Kruse who created a [time-lapse fo
 Result
 ------------
 
-The result can be found [here on Youtube](https://www.youtube.com/watch?v=95eT5gZR9M4).
+The result can be found [here on Youtube](https://www.youtube.com/watch?v=T67sLtW5Iic).
 
 How does it work?
 --------

@@ -35,7 +35,7 @@ df_runners <- X[['df_runners']]
 split_times <- X[['split_times']]
 split_dists <- get_split_dists(df_runners)
 
-for (minute in seq(0,384,0.5))
+for (minute in seq(0,384,0.25))
 {
   print(paste0('minute: ', minute))
   # Initialize lists to keep track of each runners' lat and lon.
@@ -92,4 +92,6 @@ for(file in files)
 }
 
 # Run system command to create MKV file.
-system('ffmpeg -framerate 6 -y -i images/magick/%04d.png -codec copy output/timelapse.mkv')
+system('ffmpeg -framerate 12 -y -i images/magick/%04d.png output/timelapse.mkv')
+system('ffmpeg -framerate 12 -y -i images/magick/%04d.png -c:v qtrle -pix_fmt rgb24 output/timelapse2.mov')
+
